@@ -30,10 +30,47 @@ var BLACK_QUEEN = 0x0f;
 
 var currentPlayer = WHITE; // whose turn is it now?
 
-function shuffleBackRow(array) {
-	// Determine the index range corresponding to the back row
-	const backRowStart = 0;
-	const backRowEnd = 7;
+const backRowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
+const whiteRowIndices = [112, 113, 114, 115, 116, 117, 118, 119];
+
+function getWhiteRowArray(randomConfig, whiteRowIndices) {
+	const whiteRowArray = [];
+  
+	randomConfig.forEach(element => {
+		switch (element) {
+			case 0:
+				whiteRowArray.push(whiteRowIndices[0]);
+				break;
+			case 1:
+				whiteRowArray.push(whiteRowIndices[1]);
+				break;
+			case 2:
+				whiteRowArray.push(whiteRowIndices[2]);
+				break;
+			case 3:
+				whiteRowArray.push(whiteRowIndices[3]);
+				break;
+			case 4:
+				whiteRowArray.push(whiteRowIndices[4]);
+				break;
+			case 5:
+				whiteRowArray.push(whiteRowIndices[5]);
+				break;
+			case 6:
+				whiteRowArray.push(whiteRowIndices[6]);
+				break;
+			case 7:
+				whiteRowArray.push(whiteRowIndices[7]);
+				break;
+		}
+	});
+  
+	return whiteRowArray;
+  }
+
+function shuffleBackRow(oldBoard) {
+	// Create a copy of the old board to avoid modifying the original array
+	let newBoard = oldBoard.slice();
 
 	// Define the possible configurations of the back rank in Chess960
 	const chess960BackRows = generateChess960BackRows();
@@ -41,20 +78,23 @@ function shuffleBackRow(array) {
 	// Randomly select one of the valid configurations
 	const randomConfig =
 		chess960BackRows[Math.floor(Math.random() * chess960BackRows.length)];
-	console.log(randomConfig);
 
-	let tempArray = [];
-	array.forEach((element) => {
-		tempArray.push(element);
-	});
+		console.log(randomConfig)
+	
+		const shuffledWhiteRow = getWhiteRowArray(randomConfig, whiteRowIndices);
+		console.log(shuffledWhiteRow)
 
 	// Rearrange the back row elements based on the selected configuration
-	for (let i = backRowStart; i <= backRowEnd; i++) {
-		array[i] = tempArray[randomConfig[i]];
+	for (let i = 0; i < backRowIndices.length; i++) {
+		newBoard[backRowIndices[i]] = oldBoard[randomConfig[i]];
 	}
-	console.log(array);
 
-	return array;
+	// Rearrange the white row elements based on the selected configuration
+	for (let i = 0; i < whiteRowIndices.length; i++) {
+		newBoard[whiteRowIndices[i]] = oldBoard[shuffledWhiteRow[i]];
+	}
+
+	return newBoard;
 }
 
 function isIndexBetween(index, startIndex, endIndex) {
@@ -65,25 +105,26 @@ function generateChess960BackRows() {
 	const backRowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
 	const chess960BackRows = [];
 
-	const rook1Index = backRowIndices.indexOf(0);
-	const knight1Index = backRowIndices.indexOf(1);
-	const bishop1Index = backRowIndices.indexOf(2);
-	const queenIndex = backRowIndices.indexOf(3);
-	const kingIndex = backRowIndices.indexOf(4);
-	const bishop2Index = backRowIndices.indexOf(5);
-	const knight2Index = backRowIndices.indexOf(6);
-	const rook2Index = backRowIndices.indexOf(7);
-
 	function isConfigurationValid(configuration) {
-		// Check if the king is on an even index
+		const bishopIndices = configuration.reduce((indices, piece, index) => {
+			if (piece === 2 || piece === 5) {
+				indices.push(index);
+			}
+			return indices;
+		}, []);
+		const [bishop1Index, bishop2Index] = bishopIndices;
+
+		//Check if the bishop is on an even index
 		if (bishop1Index % 2 !== 0) {
 			return false;
 		}
 
+		//Check if the bishop is on an odd index
 		if (bishop2Index % 2 === 0) {
 			return false;
 		}
 
+		//grab the indexes of the rooks
 		const rookIndices = configuration.reduce((indices, piece, index) => {
 			if (piece === 0 || piece === 7) {
 				indices.push(index);
@@ -91,6 +132,7 @@ function generateChess960BackRows() {
 			return indices;
 		}, []);
 
+		//grab the index of the king
 		const kingIndices = configuration.reduce((indices, piece, index) => {
 			if (piece === 4) {
 				indices.push(index);
@@ -100,6 +142,7 @@ function generateChess960BackRows() {
 
 		const [rook1Index, rook2Index] = rookIndices;
 
+		//check if the king is between the rooks
 		if (
 			!isIndexBetween(kingIndices, rook1Index, rook2Index) &&
 			!isIndexBetween(kingIndices, rook2Index, rook1Index)
@@ -107,17 +150,10 @@ function generateChess960BackRows() {
 			return false;
 		}
 
-		//need to find out if the king(#4) is between the rooks (#0 & #7)
-
-		// const kingCount = configuration.filter((piece) => piece === 4).length;
-		// if (kingCount !== 1) {
-		// 	return false;
-		// }
-
 		return true;
 	}
 
-	// Generate all permutations of the back row indices
+	//Generate all permutations of the back row indices
 	function generatePermutations(arr, size) {
 		if (size === 1) {
 			if (isConfigurationValid(arr.slice())) {
