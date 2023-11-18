@@ -9,6 +9,7 @@ const {
 	isSquareUnderAttack,
 } = require("./chess960");
 
+//should pass, but doesn't
 describe("getWhiteRowArray", () => {
 	test("should return the correct white row array for a given configuration", () => {
 		const randomConfig = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -19,6 +20,7 @@ describe("getWhiteRowArray", () => {
 	});
 });
 
+//should pass, but doesn't
 describe("shuffleBackRow", () => {
 	test("should return a board with shuffled back and white rows", () => {
 		const oldBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -46,13 +48,15 @@ describe("shuffleBackRow", () => {
 });
 
 describe("isPseudoLegalTesting", () => {
-	const from = 52; // Example square index
-	const to = 36; // Example square index
-	const currentPlayer = WHITE; // Example player
+	const from = 52;
+	const to = 36;
+	const currentPlayer = WHITE;
+	//I can't figure out why this won't run
 	const result = isPseudoLegal(from, to, currentPlayer, board);
 	expect(result).toBe(true);
 });
 
+//unfinished, but I'm frustrated with this
 describe("makeMove", () => {
 	// TODO: Write test cases for makeMove function
 });
