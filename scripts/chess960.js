@@ -453,6 +453,10 @@ function isSquareUnderAttack(square, currentPlayer) {
 }
 
 
-// module.exports = shuffleBackRow;
-// module.exports = getWhiteRowArray;
-// module.exports = generateChess960BackRows;
+module.exports = shuffleBackRow;
+module.exports = getWhiteRowArray;
+module.exports = generateChess960BackRows;
+module.exports = isPseudoLegal;
+module.exports = makeMove;
+module.exports = unMakeMove;
+module.exports = checkAfterMove;
