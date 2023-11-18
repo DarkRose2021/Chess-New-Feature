@@ -451,3 +451,8 @@ function isSquareUnderAttack(square, currentPlayer) {
 	}
 	return false;
 }
+
+
+// module.exports = shuffleBackRow;
+// module.exports = getWhiteRowArray;
+// module.exports = generateChess960BackRows;
