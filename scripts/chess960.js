@@ -41,53 +41,79 @@ function shuffleBackRow(array) {
 	// Randomly select one of the valid configurations
 	const randomConfig =
 		chess960BackRows[Math.floor(Math.random() * chess960BackRows.length)];
-        console.log(randomConfig)
+	console.log(randomConfig);
+
+	let tempArray = [];
+	array.forEach((element) => {
+		tempArray.push(element);
+	});
 
 	// Rearrange the back row elements based on the selected configuration
-    //PROBLEM CODE!!!!!!!
 	for (let i = backRowStart; i <= backRowEnd; i++) {
-		array[i] = array[randomConfig[i]];
+		array[i] = tempArray[randomConfig[i]];
 	}
-    console.log(array)
+	console.log(array);
 
 	return array;
 }
 
-//kingIndex % 2 !== 0
-
-//randomly pick king 1-6
+function isIndexBetween(index, startIndex, endIndex) {
+	return index >= startIndex && index <= endIndex;
+}
 
 function generateChess960BackRows() {
 	const backRowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
 	const chess960BackRows = [];
 
-    const rook1Index = backRowIndices.indexOf(0);
-    const knight1Index = backRowIndices.indexOf(1);
-    const bishop1Index = backRowIndices.indexOf(2);
-    const queenIndex = backRowIndices.indexOf(3);
-    const kingIndex = backRowIndices.indexOf(4);
-    const bishop2Index = backRowIndices.indexOf(5);
-    const knight2Index = backRowIndices.indexOf(6);
-    const rook2Index = backRowIndices.indexOf(7);
+	const rook1Index = backRowIndices.indexOf(0);
+	const knight1Index = backRowIndices.indexOf(1);
+	const bishop1Index = backRowIndices.indexOf(2);
+	const queenIndex = backRowIndices.indexOf(3);
+	const kingIndex = backRowIndices.indexOf(4);
+	const bishop2Index = backRowIndices.indexOf(5);
+	const knight2Index = backRowIndices.indexOf(6);
+	const rook2Index = backRowIndices.indexOf(7);
 
 	function isConfigurationValid(configuration) {
 		// Check if the king is on an even index
-		const kingIndex = configuration.indexOf(4);
-		if (kingIndex % 2 !== 0) {
+		if (bishop1Index % 2 !== 0) {
 			return false;
 		}
 
-		const kingCount = configuration.filter((piece) => piece === 4).length;
-        // console.log(kingCount)
-		if (kingCount !== 1) {
-            console.log(kingCount)
+		if (bishop2Index % 2 === 0) {
 			return false;
 		}
 
-		// Check if the rooks are on the outer edges
-		if (configuration[0] !== 0 || configuration[7] !== 7) {
+		const rookIndices = configuration.reduce((indices, piece, index) => {
+			if (piece === 0 || piece === 7) {
+				indices.push(index);
+			}
+			return indices;
+		}, []);
+
+		const kingIndices = configuration.reduce((indices, piece, index) => {
+			if (piece === 4) {
+				indices.push(index);
+			}
+			return indices;
+		}, []);
+
+		const [rook1Index, rook2Index] = rookIndices;
+
+		if (
+			!isIndexBetween(kingIndices, rook1Index, rook2Index) &&
+			!isIndexBetween(kingIndices, rook2Index, rook1Index)
+		) {
 			return false;
 		}
+
+		//need to find out if the king(#4) is between the rooks (#0 & #7)
+
+		// const kingCount = configuration.filter((piece) => piece === 4).length;
+		// if (kingCount !== 1) {
+		// 	return false;
+		// }
+
 		return true;
 	}
 
